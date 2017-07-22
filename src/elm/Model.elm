@@ -10,25 +10,37 @@ type alias Model =
     }
 
 
+defaultQuizzes : List Quiz
+defaultQuizzes =
+    [ { title = "Vegan Quiz"
+      , questions =
+            [ { title = "Why would people go vegan?"
+              , correctAnswer = "all are correct"
+              , wrongAnswers =
+                    [ "Killing animals is not humane"
+                    , "Eating meat cause huge environmental problem"
+                    ]
+              }
+            ]
+      }
+    , { title = "Javascript Quiz"
+      , questions =
+            [ { title = "Inside which HTML element do we put the JavaScript?"
+              , correctAnswer = "<script>"
+              , wrongAnswers =
+                    [ "<scripting>"
+                    , "<js>"
+                    , "<javascript>"
+                    ]
+              }
+            ]
+      }
+    ]
+
+
 initialModel : Model
 initialModel =
-    { quizzes =
-        [ { question = "Why would people go vegan?"
-          , choices =
-                [ { content = "Killing animals is not humane", isCorrect = False }
-                , { content = "Eating meat cause huge environmental problem", isCorrect = False }
-                , { content = "Above all are correct", isCorrect = False }
-                ]
-          }
-        , { question = "Inside which HTML element do we put the JavaScript?"
-          , choices =
-                [ { content = "<scripting>", isCorrect = False }
-                , { content = "<js>", isCorrect = False }
-                , { content = "<script>", isCorrect = True }
-                , { content = "<javascript> ", isCorrect = False }
-                ]
-          }
-        ]
+    { quizzes = defaultQuizzes
     , quizWizard = QuizWizardModel.initialModel
     }
 

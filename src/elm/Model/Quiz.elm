@@ -2,12 +2,13 @@ module Model.Quiz exposing (..)
 
 
 type alias Quiz =
-    { question : String
-    , choices : List Choice
+    { title : String
+    , questions : List Question
     }
 
 
-type alias Choice =
-    { content : String
-    , isCorrect : Bool
+type alias Question =
+    { title : String
+    , correctAnswer : String
+    , wrongAnswers : List String
     }

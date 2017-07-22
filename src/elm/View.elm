@@ -3,7 +3,7 @@ module View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (Model, Msg(..))
-import Model.Quiz exposing (Quiz, Choice)
+import Model.Quiz exposing (Quiz, Question)
 import QuizWizard.View as QuizWizardView
 
 
@@ -24,11 +24,11 @@ quizView : Quiz -> Html Msg
 quizView quiz =
     div [ class "card" ]
         [ div [ class "card-header" ] [ p [ class "card-header-title" ] [ text "Question" ] ]
-        , div [ class "card-content" ] [ div [ class "content" ] [ text quiz.question ] ]
-        , div [ class "card-footer" ] (List.map choiceView quiz.choices)
+        , div [ class "card-content" ] [ div [ class "content" ] [ text quiz.title ] ]
+        , div [ class "card-footer" ] (List.map questionView quiz.questions)
         ]
 
 
-choiceView : Choice -> Html Msg
-choiceView { content } =
-    div [ class "card-footer-item" ] [ text content ]
+questionView : Question -> Html Msg
+questionView { title } =
+    div [ class "card-footer-item" ] [ text title ]
