@@ -86,7 +86,7 @@ form { title, questions, currentQuestionField, navigationHistory } =
         formContent =
             case navigationHistory.current of
                 AddTitle ->
-                    Maybe.withDefault "" title |> quizTitleForm
+                    quizTitleForm title
 
                 AddQuestions ->
                     quizQuestionForm currentQuestionField |> Html.map UpdateCurrentQuestionFieldMsg
@@ -123,7 +123,7 @@ quizQuestionForm { title, correctAnswer, prevWrongAnswers, lastWrongAnswer } =
                     , type_ "text"
                     , placeholder "Question Title"
                     , onInput UpdateCurrentQuetionTitle
-                    , Maybe.withDefault "" title |> value
+                    , value title
                     ]
                     []
                 ]
@@ -136,7 +136,7 @@ quizQuestionForm { title, correctAnswer, prevWrongAnswers, lastWrongAnswer } =
                     , type_ "text"
                     , placeholder "Correct answer"
                     , onInput UpdateCurrentQuestionCorrectAnswer
-                    , Maybe.withDefault "" correctAnswer |> value
+                    , value correctAnswer
                     ]
                     []
                 ]
@@ -153,8 +153,8 @@ quizQuestionForm { title, correctAnswer, prevWrongAnswers, lastWrongAnswer } =
         )
 
 
-wrongAnswerField : String -> (String -> UpdateCurrentQuestionFieldMsg) -> Maybe String -> Html UpdateCurrentQuestionFieldMsg
-wrongAnswerField title msg maybeWrongAnswer =
+wrongAnswerField : String -> (String -> UpdateCurrentQuestionFieldMsg) -> String -> Html UpdateCurrentQuestionFieldMsg
+wrongAnswerField title msg wrongAnswer =
     div [ class "field" ]
         [ label [ class "label" ] [ text title ]
         , div [ class "control" ]
@@ -163,7 +163,7 @@ wrongAnswerField title msg maybeWrongAnswer =
                 , type_ "text"
                 , placeholder "Wrong answer"
                 , onInput msg
-                , Maybe.withDefault "" maybeWrongAnswer |> value
+                , value wrongAnswer
                 ]
                 []
             ]

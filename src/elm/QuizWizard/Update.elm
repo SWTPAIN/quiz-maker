@@ -20,7 +20,7 @@ update msg model =
     case msg of
         UpdateQuizTitle title ->
             { model
-                | title = Just title
+                | title = title
             }
 
         UpdateCurrentQuestionFieldMsg updateCurrentQuestionFieldMsg ->
@@ -56,6 +56,7 @@ addCurrentQuestion model =
                 | currentQuestionField =
                     defaultQuestionFeild
                 , questions = model.questions ++ (List.singleton currentQuestion)
+                , error = Nothing
             }
 
         Err err ->
@@ -67,15 +68,15 @@ addCurrentQuestion model =
 getCurrentQuestion : QuestionField -> Result Error Question
 getCurrentQuestion ({ title, correctAnswer, prevWrongAnswers, lastWrongAnswer } as questionField) =
     case title of
-        Nothing ->
+        "" ->
             Err "Title cannnot be empty"
 
-        Just title_ ->
+        title_ ->
             case correctAnswer of
-                Nothing ->
+                "" ->
                     Err "Correct Answer cannot be empty"
 
-                Just correctAnswer_ ->
+                correctAnswer_ ->
                     case getWrongAnswers questionField of
                         Err err_ ->
                             Err err_
@@ -93,12 +94,12 @@ updateCurrentQuestionField updateCurrentQuestionFieldMsg questionField =
     case updateCurrentQuestionFieldMsg of
         UpdateCurrentQuetionTitle title ->
             { questionField
-                | title = Just title
+                | title = title
             }
 
         UpdateCurrentQuestionCorrectAnswer ans ->
             { questionField
-                | correctAnswer = Just ans
+                | correctAnswer = ans
             }
 
         UpdateCurrentQuestionPrevWrongAnswer index ans ->
@@ -108,22 +109,22 @@ updateCurrentQuestionField updateCurrentQuestionFieldMsg questionField =
 
         UpdateCurrentQuestionLastWrongAnswer ans ->
             { questionField
-                | lastWrongAnswer = Just ans
+                | lastWrongAnswer = ans
             }
 
         AddOneWrongQuestion ->
             { questionField
                 | prevWrongAnswers = questionField.prevWrongAnswers ++ [ questionField.lastWrongAnswer ]
-                , lastWrongAnswer = Nothing
+                , lastWrongAnswer = ""
             }
 
 
-updateCurrentQuestionWrongAnswers : Int -> String -> List (Maybe String) -> List (Maybe String)
+updateCurrentQuestionWrongAnswers : Int -> String -> List String -> List String
 updateCurrentQuestionWrongAnswers targetIndex ans wrongAnswers =
     List.indexedMap
         (\index answer ->
             if targetIndex == index then
-                Just ans
+                ans
             else
                 answer
         )

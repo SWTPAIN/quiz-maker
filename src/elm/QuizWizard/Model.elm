@@ -5,7 +5,7 @@ import Model.Shared exposing (Error)
 
 
 type alias Model =
-    { title : Maybe String
+    { title : String
     , questions : List Question
     , currentQuestionField :
         QuestionField
@@ -35,10 +35,10 @@ initialnavigationHistory =
 
 
 type alias QuestionField =
-    { title : Maybe String
-    , correctAnswer : Maybe String
-    , prevWrongAnswers : List (Maybe String)
-    , lastWrongAnswer : Maybe String
+    { title : String
+    , correctAnswer : String
+    , prevWrongAnswers : List String
+    , lastWrongAnswer : String
     }
 
 
@@ -47,10 +47,10 @@ getWrongAnswers { prevWrongAnswers, lastWrongAnswer } =
     let
         step ele acc =
             case ele of
-                Nothing ->
+                "" ->
                     Err "No answer can be empty."
 
-                Just x ->
+                x ->
                     Result.map ((::) x) acc
     in
         List.foldr step (Ok []) (prevWrongAnswers ++ [ lastWrongAnswer ])
@@ -58,16 +58,16 @@ getWrongAnswers { prevWrongAnswers, lastWrongAnswer } =
 
 defaultQuestionFeild : QuestionField
 defaultQuestionFeild =
-    { title = Nothing
-    , correctAnswer = Nothing
+    { title = ""
+    , correctAnswer = ""
     , prevWrongAnswers = []
-    , lastWrongAnswer = Nothing
+    , lastWrongAnswer = ""
     }
 
 
 initialModel : Model
 initialModel =
-    { title = Nothing
+    { title = ""
     , questions = []
     , currentQuestionField = defaultQuestionFeild
     , error = Nothing
