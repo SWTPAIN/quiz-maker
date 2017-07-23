@@ -51,6 +51,13 @@ footer model =
                         ]
                         [ text "Next" ]
                     ]
+                , div [ class "card-footer-item" ]
+                    [ div
+                        [ class "button is-success is-outlined"
+                        , onClick CreateQuizRequest
+                        ]
+                        [ text "Create" ]
+                    ]
                 ]
 
 

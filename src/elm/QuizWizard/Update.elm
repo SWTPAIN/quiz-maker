@@ -1,6 +1,7 @@
 module QuizWizard.Update exposing (..)
 
-import Model.Quiz exposing (Question)
+import Model.Quiz exposing (Question, Quiz)
+import Update.Utils exposing (msgToCmd)
 import QuizWizard.Model
     exposing
         ( Model
@@ -15,37 +16,80 @@ import QuizWizard.Model
 import Model.Shared exposing (Error)
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdateQuizTitle title ->
-            { model
+            ( { model
                 | title = title
-            }
+              }
+            , Cmd.none
+            )
 
         UpdateCurrentQuestionFieldMsg updateCurrentQuestionFieldMsg ->
-            { model
+            ( { model
                 | currentQuestionField = updateCurrentQuestionField updateCurrentQuestionFieldMsg model.currentQuestionField
-            }
+              }
+            , Cmd.none
+            )
 
         NavigationMsg navigationMsg ->
-            { model
+            ( { model
                 | navigationHistory = updateNavigationHistory navigationMsg model.navigationHistory
-            }
+              }
+            , Cmd.none
+            )
 
         StartAddQuestion ->
-            let
-                newModel =
-                    { model
-                        | questions = []
-                        , currentQuestionField =
-                            defaultQuestionFeild
-                    }
-            in
-                update (NavigationMsg NextPage) newModel
+            case getTitle model of
+                Err err ->
+                    ( { model | error = Just err }, Cmd.none )
+
+                Ok _ ->
+                    let
+                        newModel =
+                            { model
+                                | questions = []
+                                , currentQuestionField =
+                                    defaultQuestionFeild
+                                , error = Nothing
+                            }
+                    in
+                        update (NavigationMsg NextPage) newModel
 
         AddCurrentQuestion ->
-            addCurrentQuestion model
+            ( addCurrentQuestion model, Cmd.none )
+
+        CreateQuiz quiz ->
+            ( model, Cmd.none )
+
+        CreateQuizRequest ->
+            case getQuiz model of
+                Ok quiz ->
+                    ( model, CreateQuiz quiz |> msgToCmd )
+
+                Err err ->
+                    ( { model
+                        | error = Just err
+                      }
+                    , Cmd.none
+                    )
+
+
+getTitle : Model -> Result Error String
+getTitle { title } =
+    case title of
+        "" ->
+            Err "Quiz Title cannnot be empty"
+
+        title_ ->
+            Ok title_
+
+
+getQuiz : Model -> Result Error Quiz
+getQuiz ({ title, questions } as model) =
+    getTitle model
+        |> Result.map (\title -> { title = title, questions = questions })
 
 
 addCurrentQuestion : Model -> Model
@@ -69,7 +113,7 @@ getCurrentQuestion : QuestionField -> Result Error Question
 getCurrentQuestion ({ title, correctAnswer, prevWrongAnswers, lastWrongAnswer } as questionField) =
     case title of
         "" ->
-            Err "Title cannnot be empty"
+            Err "Question Title cannnot be empty"
 
         title_ ->
             case correctAnswer of

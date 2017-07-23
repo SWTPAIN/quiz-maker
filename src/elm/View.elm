@@ -8,15 +8,18 @@ import QuizWizard.View as QuizWizardView
 
 
 view : Model -> Html Msg
-view { quizzes, quizWizard } =
-    div [ class "columns" ]
-        [ div [ class "column" ]
-            [ Html.map QuizWizardMsg (QuizWizardView.view quizWizard) ]
-        , div [ class "column" ]
-            (List.map
-                quizView
-                quizzes
-            )
+view { quizzes, quizWizard, notification } =
+    div []
+        [ notificationView notification
+        , div [ class "columns" ]
+            [ div [ class "column" ]
+                [ Html.map QuizWizardMsg (QuizWizardView.view quizWizard) ]
+            , div [ class "column" ]
+                (List.map
+                    quizView
+                    quizzes
+                )
+            ]
         ]
 
 
@@ -32,3 +35,15 @@ quizView quiz =
 questionView : Question -> Html Msg
 questionView { title } =
     div [ class "card-footer-item" ] [ text title ]
+
+
+notificationView : Maybe String -> Html Msg
+notificationView maybeNotification =
+    case maybeNotification of
+        Nothing ->
+            div [] []
+
+        Just error_ ->
+            div [ class "notification is-success" ]
+                [ text error_
+                ]

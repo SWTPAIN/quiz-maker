@@ -7,6 +7,7 @@ import QuizWizard.Model as QuizWizardModel
 type alias Model =
     { quizzes : List Quiz
     , quizWizard : QuizWizardModel.Model
+    , notification : Maybe String
     }
 
 
@@ -42,6 +43,7 @@ initialModel : Model
 initialModel =
     { quizzes = defaultQuizzes
     , quizWizard = QuizWizardModel.initialModel
+    , notification = Nothing
     }
 
 

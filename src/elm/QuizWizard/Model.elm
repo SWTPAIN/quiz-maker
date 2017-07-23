@@ -1,6 +1,6 @@
 module QuizWizard.Model exposing (..)
 
-import Model.Quiz exposing (Question)
+import Model.Quiz exposing (Question, Quiz)
 import Model.Shared exposing (Error)
 
 
@@ -80,6 +80,8 @@ type Msg
     | UpdateCurrentQuestionFieldMsg UpdateCurrentQuestionFieldMsg
     | StartAddQuestion
     | AddCurrentQuestion
+    | CreateQuizRequest
+    | CreateQuiz Quiz
     | NavigationMsg NavigationMsg
 
 
