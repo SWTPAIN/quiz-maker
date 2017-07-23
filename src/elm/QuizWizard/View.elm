@@ -59,14 +59,14 @@ footer model =
                         [ class "button is-primary is-outlined"
                         , onClick AddCurrentQuestion
                         ]
-                        [ text "Next" ]
+                        [ text "Add Question" ]
                     ]
                 , div []
                     [ div
                         [ class "button is-success is-outlined"
                         , onClick CreateQuizRequest
                         ]
-                        [ text "Create" ]
+                        [ text "Create Quiz" ]
                     ]
                 ]
 

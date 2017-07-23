@@ -66,16 +66,17 @@ update msg model =
             ( model, Cmd.none )
 
         CreateQuizRequest ->
-            case getQuiz model of
-                Ok quiz ->
-                    ( model, CreateQuiz quiz |> msgToCmd )
-
+            case getCurrentQuestion model.currentQuestionField of
                 Err err ->
-                    ( { model
-                        | error = Just err
-                      }
-                    , Cmd.none
-                    )
+                    { model | error = Just err } ! [ Cmd.none ]
+
+                Ok question ->
+                    case getQuiz { model | questions = model.questions ++ [ question ] } of
+                        Ok quiz ->
+                            ( model, CreateQuiz quiz |> msgToCmd )
+
+                        Err err ->
+                            { model | error = Just err } ! [ Cmd.none ]
 
         BackStep ->
             case List.reverse model.questions of
