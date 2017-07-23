@@ -116,26 +116,24 @@ getQuiz ({ title, questions } as model) =
 
 getCurrentQuestion : QuestionField -> Result Error Question
 getCurrentQuestion ({ title, correctAnswer, prevWrongAnswers, lastWrongAnswer } as questionField) =
-    case title of
-        "" ->
+    Result.map3
+        (\title correctAnswer wrongAnswers ->
+            { title = title
+            , correctAnswer = correctAnswer
+            , wrongAnswers = wrongAnswers
+            }
+        )
+        (if title == "" then
             Err "Question Title cannnot be empty"
-
-        title_ ->
-            case correctAnswer of
-                "" ->
-                    Err "Correct Answer cannot be empty"
-
-                correctAnswer_ ->
-                    case getWrongAnswers questionField of
-                        Err err_ ->
-                            Err err_
-
-                        Ok wrongAnswers ->
-                            Ok
-                                { title = title_
-                                , correctAnswer = correctAnswer_
-                                , wrongAnswers = wrongAnswers
-                                }
+         else
+            Ok title
+        )
+        (if correctAnswer == "" then
+            Err "Correct Answer cannot be empty"
+         else
+            Ok correctAnswer
+        )
+        (getWrongAnswers questionField)
 
 
 updateCurrentQuestionField : UpdateCurrentQuestionFieldMsg -> QuestionField -> QuestionField
