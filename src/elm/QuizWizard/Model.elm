@@ -5,33 +5,24 @@ import Model.Shared exposing (Error)
 
 
 type alias Model =
-    { title : String
+    { title :
+        String
     , questions : List Question
     , currentQuestionField :
         QuestionField
     , error : Maybe Error
-    , navigationHistory : NavigationHistory
+    , currentStep : Step
     }
+
+
+getQuestions : Model -> List Question
+getQuestions { questions } =
+    questions
 
 
 type Step
     = AddTitle
-    | AddQuestions
-
-
-type alias NavigationHistory =
-    { previous : List Step
-    , current : Step
-    , remaining : List Step
-    }
-
-
-initialnavigationHistory : NavigationHistory
-initialnavigationHistory =
-    { previous = []
-    , current = AddTitle
-    , remaining = [ AddQuestions ]
-    }
+    | AddQuestion
 
 
 type alias QuestionField =
@@ -40,6 +31,25 @@ type alias QuestionField =
     , prevWrongAnswers : List String
     , lastWrongAnswer : String
     }
+
+
+questionToQuestionField : Question -> QuestionField
+questionToQuestionField { title, correctAnswer, wrongAnswers } =
+    let
+        reversedWrongAnswers =
+            List.reverse wrongAnswers
+
+        lastWrongAnswer =
+            reversedWrongAnswers |> List.head |> Maybe.withDefault ""
+
+        prevWrongAnswers =
+            reversedWrongAnswers |> List.drop 1 |> List.reverse
+    in
+        { title = title
+        , correctAnswer = correctAnswer
+        , prevWrongAnswers = prevWrongAnswers
+        , lastWrongAnswer = lastWrongAnswer
+        }
 
 
 getWrongAnswers : QuestionField -> Result Error (List String)
@@ -56,8 +66,8 @@ getWrongAnswers { prevWrongAnswers, lastWrongAnswer } =
         List.foldr step (Ok []) (prevWrongAnswers ++ [ lastWrongAnswer ])
 
 
-defaultQuestionFeild : QuestionField
-defaultQuestionFeild =
+defaultQuestionField : QuestionField
+defaultQuestionField =
     { title = ""
     , correctAnswer = ""
     , prevWrongAnswers = []
@@ -67,11 +77,12 @@ defaultQuestionFeild =
 
 initialModel : Model
 initialModel =
-    { title = ""
+    { title =
+        ""
     , questions = []
-    , currentQuestionField = defaultQuestionFeild
+    , currentQuestionField = defaultQuestionField
     , error = Nothing
-    , navigationHistory = initialnavigationHistory
+    , currentStep = AddTitle
     }
 
 
@@ -82,7 +93,7 @@ type Msg
     | AddCurrentQuestion
     | CreateQuizRequest
     | CreateQuiz Quiz
-    | NavigationMsg NavigationMsg
+    | BackStep
 
 
 type UpdateCurrentQuestionFieldMsg
@@ -91,7 +102,3 @@ type UpdateCurrentQuestionFieldMsg
     | UpdateCurrentQuestionPrevWrongAnswer Int String
     | UpdateCurrentQuestionLastWrongAnswer String
     | AddOneWrongQuestion
-
-
-type NavigationMsg
-    = NextPage

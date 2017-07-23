@@ -10,24 +10,30 @@ import QuizWizard.Model
         , UpdateCurrentQuestionFieldMsg(..)
         , QuestionField
         , Step(..)
+        , getQuestions
         )
 
 
 view : Model -> Html Msg
 view model =
-    div [ class "card" ]
-        [ div [ class "card-header" ] [ p [ class "card-header-title" ] [ model |> title |> text ] ]
-        , div [ class "card-content" ]
-            [ notification model
-            , form model
+    div [ class "panel" ]
+        [ div [ class "panel-heading" ] [ text "Create your own quiz" ]
+        , div [ class "panel-block" ]
+            [ div [ class "section" ]
+                [ div [ class "title" ] [ p [] [ model |> title |> text ] ]
+                , div []
+                    [ notification model
+                    , form model
+                    ]
+                , footer model
+                ]
             ]
-        , footer model
         ]
 
 
 footer : Model -> Html Msg
 footer model =
-    case model.navigationHistory.current of
+    case model.currentStep of
         AddTitle ->
             div [ class "card-footer" ]
                 [ div [ class "card-footer-item" ]
@@ -39,19 +45,23 @@ footer model =
                     ]
                 ]
 
-        AddQuestions ->
-            div [ class "card-footer" ]
-                [ div [ class "card-footer-item" ]
-                    [ div [ class "button is-outlined" ] [ text "Back" ]
+        AddQuestion ->
+            div []
+                [ div []
+                    [ div
+                        [ class "button is-outlined"
+                        , onClick BackStep
+                        ]
+                        [ text "Back" ]
                     ]
-                , div [ class "card-footer-item" ]
+                , div []
                     [ div
                         [ class "button is-primary is-outlined"
                         , onClick AddCurrentQuestion
                         ]
                         [ text "Next" ]
                     ]
-                , div [ class "card-footer-item" ]
+                , div []
                     [ div
                         [ class "button is-success is-outlined"
                         , onClick CreateQuizRequest
@@ -74,28 +84,28 @@ notification { error } =
 
 
 title : Model -> String
-title { questions, currentQuestionField, navigationHistory } =
-    case navigationHistory.current of
+title ({ currentQuestionField, currentStep } as model) =
+    case currentStep of
         AddTitle ->
             "What's the quiz title?"
 
-        AddQuestions ->
+        AddQuestion ->
             let
                 currentQuestionCount =
-                    questions |> List.length |> (+) 1 |> toString
+                    model |> getQuestions |> List.length |> (+) 1 |> toString
             in
                 "What's the question " ++ currentQuestionCount ++ " title"
 
 
 form : Model -> Html Msg
-form { title, questions, currentQuestionField, navigationHistory } =
+form { title, currentQuestionField, currentStep } =
     let
         formContent =
-            case navigationHistory.current of
+            case currentStep of
                 AddTitle ->
                     quizTitleForm title
 
-                AddQuestions ->
+                AddQuestion ->
                     quizQuestionForm currentQuestionField |> Html.map UpdateCurrentQuestionFieldMsg
     in
         Html.form []

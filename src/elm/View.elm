@@ -12,29 +12,38 @@ view { quizzes, quizWizard, notification } =
     div []
         [ notificationView notification
         , div [ class "columns" ]
-            [ div [ class "column" ]
+            [ div [ class "column is-half" ]
                 [ Html.map QuizWizardMsg (QuizWizardView.view quizWizard) ]
             , div [ class "column" ]
-                (List.map
-                    quizView
-                    quizzes
-                )
+                [ div [ class "panel" ]
+                    [ div [ class "panel-heading" ]
+                        [ text "Questions"
+                        ]
+                    , div [ class "panel-block" ]
+                        [ div []
+                            (List.map
+                                quizView
+                                quizzes
+                            )
+                        ]
+                    ]
+                ]
             ]
         ]
 
 
 quizView : Quiz -> Html Msg
 quizView quiz =
-    div [ class "card" ]
-        [ div [ class "card-header" ] [ p [ class "card-header-title" ] [ text "Question" ] ]
-        , div [ class "card-content" ] [ div [ class "content" ] [ text quiz.title ] ]
-        , div [ class "card-footer" ] (List.map questionView quiz.questions)
+    div [ class "container" ]
+        [ div [ class "section" ]
+            [ a [ class "title" ] [ p [] [ text quiz.title ] ]
+            ]
         ]
 
 
 questionView : Question -> Html Msg
 questionView { title } =
-    div [ class "card-footer-item" ] [ text title ]
+    div [] [ text title ]
 
 
 notificationView : Maybe String -> Html Msg

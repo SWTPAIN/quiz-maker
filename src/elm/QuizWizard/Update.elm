@@ -7,11 +7,12 @@ import QuizWizard.Model
         ( Model
         , Msg(..)
         , UpdateCurrentQuestionFieldMsg(..)
-        , NavigationMsg(..)
+        , Step(..)
         , QuestionField
-        , defaultQuestionFeild
+        , defaultQuestionField
         , getWrongAnswers
-        , NavigationHistory
+        , getQuestions
+        , questionToQuestionField
         )
 import Model.Shared exposing (Error)
 
@@ -33,32 +34,33 @@ update msg model =
             , Cmd.none
             )
 
-        NavigationMsg navigationMsg ->
-            ( { model
-                | navigationHistory = updateNavigationHistory navigationMsg model.navigationHistory
-              }
-            , Cmd.none
-            )
-
         StartAddQuestion ->
             case getTitle model of
                 Err err ->
                     ( { model | error = Just err }, Cmd.none )
 
                 Ok _ ->
-                    let
-                        newModel =
-                            { model
-                                | questions = []
-                                , currentQuestionField =
-                                    defaultQuestionFeild
-                                , error = Nothing
-                            }
-                    in
-                        update (NavigationMsg NextPage) newModel
+                    ( { model
+                        | currentQuestionField =
+                            defaultQuestionField
+                        , error = Nothing
+                        , currentStep = AddQuestion
+                      }
+                    , Cmd.none
+                    )
 
         AddCurrentQuestion ->
-            ( addCurrentQuestion model, Cmd.none )
+            case getCurrentQuestion model.currentQuestionField of
+                Err err ->
+                    { model | error = Just err } ! [ Cmd.none ]
+
+                Ok question ->
+                    { model
+                        | questions = model.questions ++ [ question ]
+                        , currentQuestionField = defaultQuestionField
+                        , error = Nothing
+                    }
+                        ! [ Cmd.none ]
 
         CreateQuiz quiz ->
             ( model, Cmd.none )
@@ -75,6 +77,25 @@ update msg model =
                     , Cmd.none
                     )
 
+        BackStep ->
+            case List.reverse model.questions of
+                [] ->
+                    { model
+                        | error = Nothing
+                        , currentStep = AddTitle
+                        , questions = []
+                        , currentQuestionField = defaultQuestionField
+                    }
+                        ! [ Cmd.none ]
+
+                lastQ :: restQs ->
+                    { model
+                        | error = Nothing
+                        , questions = restQs
+                        , currentQuestionField = questionToQuestionField lastQ
+                    }
+                        ! [ Cmd.none ]
+
 
 getTitle : Model -> Result Error String
 getTitle { title } =
@@ -90,23 +111,6 @@ getQuiz : Model -> Result Error Quiz
 getQuiz ({ title, questions } as model) =
     getTitle model
         |> Result.map (\title -> { title = title, questions = questions })
-
-
-addCurrentQuestion : Model -> Model
-addCurrentQuestion model =
-    case getCurrentQuestion model.currentQuestionField of
-        Ok currentQuestion ->
-            { model
-                | currentQuestionField =
-                    defaultQuestionFeild
-                , questions = model.questions ++ (List.singleton currentQuestion)
-                , error = Nothing
-            }
-
-        Err err ->
-            { model
-                | error = Just err
-            }
 
 
 getCurrentQuestion : QuestionField -> Result Error Question
@@ -173,18 +177,3 @@ updateCurrentQuestionWrongAnswers targetIndex ans wrongAnswers =
                 answer
         )
         wrongAnswers
-
-
-updateNavigationHistory : NavigationMsg -> NavigationHistory -> NavigationHistory
-updateNavigationHistory navigationMsg ({ previous, current, remaining } as navigationHistory) =
-    case navigationMsg of
-        NextPage ->
-            case remaining of
-                [] ->
-                    navigationHistory
-
-                newCurrent :: newRemaining ->
-                    { previous = (previous) ++ [ current ]
-                    , current = newCurrent
-                    , remaining = newRemaining
-                    }
