@@ -3,6 +3,9 @@ module Update exposing (..)
 import Model exposing (Msg(..), Model)
 import QuizWizard.Update as QuizWizardUpdate
 import QuizWizard.Model as QuizWizardModel
+import Port
+import Route exposing (..)
+import Navigation
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -16,7 +19,7 @@ update msg model =
                         , quizzes = quiz :: model.quizzes
                         , notification = Just "Your quiz is created"
                       }
-                    , Cmd.none
+                    , Port.addQuiz quiz
                     )
 
                 _ ->
@@ -30,12 +33,24 @@ update msg model =
                         , Cmd.map QuizWizardMsg cmd
                         )
 
+        MountRoute route ->
+            mountRoute route model
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( Model.initialModel, Cmd.none )
+init : Model.Flags -> Navigation.Location -> ( Model, Cmd Msg )
+init flags location =
+    mountRoute (Route.parser location) (Model.initialModel flags)
+
+
+mountRoute : Route -> Model -> ( Model, Cmd Msg )
+mountRoute newRoute model =
+    ( { model
+        | route = newRoute
+      }
+    , Cmd.none
+    )

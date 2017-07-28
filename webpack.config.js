@@ -12,8 +12,8 @@ const dev = 'development';
 
 // determine build env
 const TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? prod : dev;
-const isDev = TARGET_ENV == dev;
-const isProd = TARGET_ENV == prod;
+const isDev = TARGET_ENV === dev;
+const isProd = TARGET_ENV === prod;
 
 // entry and output path/filename variables
 const entryPath = path.join(__dirname, 'src/static/index.js');
@@ -34,10 +34,21 @@ var commonConfig = {
     },
     module: {
         noParse: /\.elm$/,
-        rules: [{
+        rules: [
+          {
+            test: /\.js$/,
+            exclude: /(node_modules)/,
+            loader: 'babel-loader',
+            query: {
+              presets: ['es2015', 'es2016'],
+              plugins: ['transform-object-rest-spread']
+            }
+          },
+          {
             test: /\.(eot|ttf|woff|woff2|svg)$/,
             use: 'file-loader?publicPath=../../&name=static/css/[hash].[ext]'
-        }]
+          }
+        ]
     },
     plugins: [
         new webpack.LoaderOptionsPlugin({

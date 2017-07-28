@@ -1,17 +1,19 @@
 module Main exposing (..)
 
-import Html exposing (..)
-import Model exposing (Model, Msg)
+import Model exposing (Model, Msg, Flags)
 import View
 import Update
+import Navigation
+import Route
 
 
 -- APP
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Html.program
+    Navigation.programWithFlags
+        (Route.parser >> Model.MountRoute)
         { init = Update.init
         , view = View.view
         , update = Update.update
