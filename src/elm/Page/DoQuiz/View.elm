@@ -50,21 +50,23 @@ questionView questionIndex { title, wrongAnswers, correctAnswer, selectedAnswer 
     let
         answerView =
             \answer ->
-                label [ class "radio" ]
-                    [ input
-                        [ type_ "radio"
-                        , onClick (UpdateAnswer questionIndex answer)
-                        , checked (selectedAnswer == Just answer)
+                div [ class "control" ]
+                    [ label [ class "radio" ]
+                        [ input
+                            [ type_ "radio"
+                            , onClick (UpdateAnswer questionIndex answer)
+                            , checked (selectedAnswer == Just answer)
+                            ]
+                            []
+                        , text answer
                         ]
-                        []
-                    , text answer
                     ]
+
+        title_ =
+            "Question " ++ toString (questionIndex + 1) ++ ". " ++ title
     in
-        div []
-            [ h1 [ class "title" ] [ text title ]
+        div [ class "box" ]
+            [ h1 [ class "title" ] [ text title_ ]
             , div [ class "container" ]
-                [ div [ class "field" ]
-                    [ div [ class "control" ] (List.map answerView (correctAnswer :: wrongAnswers))
-                    ]
-                ]
+                (List.map answerView (correctAnswer :: wrongAnswers))
             ]

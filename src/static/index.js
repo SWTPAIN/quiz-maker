@@ -1,7 +1,7 @@
 // pull in desired CSS/SASS files
 require( './styles/main.scss' );
 require('bulma/css/bulma.css');
-var Elm = require( '../elm/Main' );
+const Elm = require( '../elm/Main' );
 
 const firebase = require('firebase');
 const config = {
@@ -13,6 +13,7 @@ const config = {
   messagingSenderId: '1029729243261'
 };
 firebase.initializeApp(config);
+
 const database = firebase.database();
 const quizzesRef = database.ref('quizzes/');
 const addQuiz = successCB => quiz => {

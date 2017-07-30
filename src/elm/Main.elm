@@ -7,9 +7,6 @@ import Navigation
 import Route
 
 
--- APP
-
-
 main : Program Flags Model Msg
 main =
     Navigation.programWithFlags
