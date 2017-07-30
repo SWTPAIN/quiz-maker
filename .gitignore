@@ -1,0 +1,3 @@
+node_modules/*
+elm-stuff/
+.ghpage-publish.sh
