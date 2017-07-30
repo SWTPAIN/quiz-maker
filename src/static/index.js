@@ -15,19 +15,47 @@ const config = {
 firebase.initializeApp(config);
 const database = firebase.database();
 const quizzesRef = database.ref('quizzes/');
-const addQuiz = quiz => {
-  quizzesRef
-    .push() // create auto-generated id
-    .set(quiz);
+const addQuiz = successCB => quiz => {
+  const newQuizRef = quizzesRef.push(); // create auto-generated id
+  newQuizRef // create auto-generated id
+    .set(quiz)
+    .then(() => {
+      // no result return from FS even it's successful
+      successCB({
+        ok: {
+          id: newQuizRef.key,
+          ...quiz
+        },
+        err: null
+      });
+    });
+};
+
+const removeLoader = () => {
+  const loader = document.getElementsByClassName('loader')[0];
+  loader && loader.remove();
 };
 
 const bootstrap = ({elemId, flags}) => {
+  removeLoader();
   const app = Elm.Main.embed( document.getElementById(elemId), flags );
-  app.ports.addQuiz.subscribe(addQuiz);
+  app.ports.addQuiz.subscribe(addQuiz(app.ports.addQuizResult.send));
+  app.ports.alert.subscribe(msg => window.alert(msg));
 };
+
 database.ref('quizzes/')
   .once('value')
   .then(snapshot => {
-    const quizzes = Object.values(snapshot.val()) || [];
+    const quizzesMap = snapshot.val();
+    const quizzes = [];
+    for (let id in quizzesMap) {
+      if (Object.prototype.hasOwnProperty.call(quizzesMap, id)) {
+        quizzes.push({
+          id,
+          ...quizzesMap[id]
+        });
+      }
+    }
+    // const quizzes = Object.values(snapshot.val()) || [];
     bootstrap({elemId: 'main', flags: {quizzes}});
   });

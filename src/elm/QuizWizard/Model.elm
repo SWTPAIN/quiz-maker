@@ -1,6 +1,6 @@
 module QuizWizard.Model exposing (..)
 
-import Model.Quiz exposing (Question, Quiz)
+import Model.Quiz exposing (Question, Quiz, DraftQuiz)
 import Model.Shared exposing (Error)
 
 
@@ -12,6 +12,7 @@ type alias Model =
         QuestionField
     , error : Maybe Error
     , currentStep : Step
+    , isCreating : Bool
     }
 
 
@@ -83,6 +84,7 @@ initialModel =
     , currentQuestionField = defaultQuestionField
     , error = Nothing
     , currentStep = AddTitle
+    , isCreating = False
     }
 
 
@@ -92,7 +94,7 @@ type Msg
     | StartAddQuestion
     | AddCurrentQuestion
     | CreateQuizRequest
-    | CreateQuiz Quiz
+    | CreateQuiz DraftQuiz
     | BackStep
 
 

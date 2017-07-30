@@ -1,7 +1,9 @@
 module Model exposing (..)
 
 import Model.Quiz exposing (Quiz)
-import QuizWizard.Model as QuizWizardModel
+import Model.Shared exposing (ServerResult)
+import Page.DoQuiz.Model as DoQuizModel
+import Page.Home.Model as HomeModel
 import Route exposing (Route)
 
 
@@ -12,8 +14,9 @@ type alias Flags =
 type alias Model =
     { route : Route
     , quizzes : List Quiz
-    , quizWizard : QuizWizardModel.Model
     , notification : Maybe String
+    , doQuiz : DoQuizModel.Model
+    , home : HomeModel.Model
     }
 
 
@@ -21,11 +24,14 @@ initialModel : Flags -> Model
 initialModel { quizzes } =
     { route = Route.Home
     , quizzes = quizzes
-    , quizWizard = QuizWizardModel.initialModel
     , notification = Nothing
+    , doQuiz = DoQuizModel.initialModel Nothing
+    , home = HomeModel.initialModel
     }
 
 
 type Msg
-    = QuizWizardMsg QuizWizardModel.Msg
-    | MountRoute Route
+    = MountRoute Route
+    | AddQuizResult (ServerResult Quiz)
+    | DoQuizMsg DoQuizModel.Msg
+    | HomeMsg HomeModel.Msg

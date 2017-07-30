@@ -1,6 +1,6 @@
 module QuizWizard.Update exposing (..)
 
-import Model.Quiz exposing (Question, Quiz)
+import Model.Quiz exposing (Question, DraftQuiz)
 import Update.Utils exposing (msgToCmd)
 import QuizWizard.Model
     exposing
@@ -108,7 +108,7 @@ getTitle { title } =
             Ok title_
 
 
-getQuiz : Model -> Result Error Quiz
+getQuiz : Model -> Result Error DraftQuiz
 getQuiz ({ title, questions } as model) =
     getTitle model
         |> Result.map (\title -> { title = title, questions = questions })

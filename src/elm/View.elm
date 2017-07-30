@@ -3,65 +3,41 @@ module View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (Model, Msg(..))
-import Model.Quiz exposing (Quiz, Question)
-import QuizWizard.View as QuizWizardView
+import Page.DoQuiz.View as PageDoQuiz
+import Page.Home.View as PageHome
 import Route
 
 
 view : Model -> Html Msg
-view { quizzes, quizWizard, notification, route } =
-    case route of
-        Route.Home ->
-            div []
-                [ notificationView notification
-                , div [ class "columns" ]
-                    [ div [ class "column is-half" ]
-                        [ Html.map QuizWizardMsg (QuizWizardView.view quizWizard) ]
-                    , div [ class "column" ]
-                        [ div [ class "panel" ]
-                            [ div [ class "panel-heading" ]
-                                [ text "Questions"
-                                ]
-                            , div [ class "panel-block" ]
-                                [ div []
-                                    (List.map
-                                        quizView
-                                        quizzes
-                                    )
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-
-        Route.DoQuiz quizId ->
-            div [] [ text quizId ]
-
-        Route.NotFound ->
-            div [] [ text "404 bye" ]
-
-
-quizView : Quiz -> Html Msg
-quizView quiz =
+view ({ quizzes, route } as model) =
     let
-        path =
-            Route.toPath (Route.DoQuiz "abs")
+        content =
+            case route of
+                Route.Home ->
+                    Html.map HomeMsg (PageHome.view quizzes model.home)
+
+                Route.DoQuiz quizId ->
+                    Html.map DoQuizMsg (PageDoQuiz.view model.doQuiz)
+
+                Route.NotFound ->
+                    notFoundView
     in
-        div [ class "container" ]
-            [ div [ class "section" ]
-                [ a
-                    [ class "title"
-                    , href path
-                    , attribute "data-navigate" path
-                    ]
-                    [ p [] [ text quiz.title ] ]
-                ]
-            ]
+        renderSite model content
 
 
-questionView : Question -> Html Msg
-questionView { title } =
-    div [] [ text title ]
+renderSite : Model -> Html Msg -> Html Msg
+renderSite { notification } content =
+    div [ class "container" ]
+        [ notificationView notification
+        , content
+        ]
+
+
+notFoundView : Html Msg
+notFoundView =
+    div [ class "container" ]
+        [ text "404 bye"
+        ]
 
 
 notificationView : Maybe String -> Html Msg

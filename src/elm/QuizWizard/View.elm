@@ -63,7 +63,12 @@ footer model =
                     ]
                 , div []
                     [ div
-                        [ class "button is-success is-outlined"
+                        [ class
+                            (if model.isCreating then
+                                "button is-success is-outlined is-loading"
+                             else
+                                "button is-success is-outlined"
+                            )
                         , onClick CreateQuizRequest
                         ]
                         [ text "Create Quiz" ]

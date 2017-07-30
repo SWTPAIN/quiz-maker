@@ -1,9 +1,13 @@
 port module Port exposing (..)
 
-import Model.Quiz exposing (Quiz)
+import Model.Quiz exposing (DraftQuiz, QuizFromServer)
+import Port.Utils exposing (..)
 
 
-port addQuiz : Quiz -> Cmd msg
+port addQuiz : DraftQuiz -> Cmd msg
 
 
-port addQuizResult : Quiz -> Cmd msg
+port alert : String -> Cmd msg
+
+
+port addQuizResult : (ServerResult QuizFromServer -> msg) -> Sub msg
