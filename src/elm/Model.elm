@@ -35,3 +35,4 @@ type Msg
     | AddQuizResult (ServerResult Quiz)
     | DoQuizMsg DoQuizModel.Msg
     | HomeMsg HomeModel.Msg
+    | CloseNotification

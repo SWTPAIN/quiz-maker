@@ -99,7 +99,7 @@ title ({ currentQuestionField, currentStep } as model) =
                 currentQuestionCount =
                     model |> getQuestions |> List.length |> (+) 1 |> toString
             in
-                "What's the question " ++ currentQuestionCount ++ " title"
+                "Question " ++ currentQuestionCount
 
 
 form : Model -> Html Msg
@@ -138,7 +138,7 @@ quizQuestionForm : QuestionField -> Html UpdateCurrentQuestionFieldMsg
 quizQuestionForm { title, correctAnswer, prevWrongAnswers, lastWrongAnswer } =
     div []
         ([ div [ class "field" ]
-            [ label [ class "label" ] [ text "What's the question?" ]
+            [ label [ class "label" ] [ text "What's the question title?" ]
             , div [ class "control" ]
                 [ input
                     [ class "input"

@@ -17,6 +17,13 @@ update msg model =
         MountRoute route ->
             mountRoute route model
 
+        CloseNotification ->
+            ( { model
+                | notification = Nothing
+              }
+            , Cmd.none
+            )
+
         AddQuizResult result ->
             case result of
                 Ok quiz ->

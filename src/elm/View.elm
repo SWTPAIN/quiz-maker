@@ -2,6 +2,7 @@ module View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Model exposing (Model, Msg(..))
 import Page.DoQuiz.View as PageDoQuiz
 import Page.Home.View as PageHome
@@ -48,5 +49,6 @@ notificationView maybeNotification =
 
         Just error_ ->
             div [ class "notification is-success" ]
-                [ text error_
+                [ button [ class "delete", onClick CloseNotification ] []
+                , text error_
                 ]
